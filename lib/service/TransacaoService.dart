@@ -13,5 +13,13 @@ class TransacaoService{
     return await _transacaoRepository.salvarTransacao(transacao);
   }
 
+  removerTransacao(TransacaoModel transacao) async{
+    await _transacaoRepository.removerTransacao(transacao);
+  }
+
+  atualizarTransacao(TransacaoModel transacao) async{
+    await _transacaoRepository.atualizarTransacao(transacao);
+  }
+
 
 }

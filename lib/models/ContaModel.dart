@@ -2,7 +2,7 @@ import 'package:decimal/decimal.dart';
 
 class ContaModel{
   int id;
-  double valor;
+  Decimal valor;
   String descricao;
   bool padrao;
 
@@ -10,7 +10,7 @@ class ContaModel{
 
   ContaModel.fromMap(Map<String, dynamic> mapConta){
     this.id = mapConta["ID"];
-    this.valor = mapConta["VALOR"];
+    this.valor = Decimal.parse(mapConta["VALOR"].toString());
     this.descricao = mapConta["DESCRICAO"];
     this.padrao = mapConta["CONTA_PADRAO"] == 1 ? true : false;
   }

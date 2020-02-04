@@ -23,7 +23,7 @@ class BalancoRepository{
 
     var TransacoesEntrada = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 1 AND T.FINALIZADO = 1");
     var TransacoesSaida = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO  AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 0 AND T.FINALIZADO = 1");
-    var TotalConta = await _database.rawQuery("SELECT IFNULL(VALOR, 0) AS VALOR FROM TB_CONTA WHERE CONTA_PADRAO = 1 LIMIT 1");
+    var TotalConta = await _database.rawQuery("SELECT IFNULL(SUM(VALOR), 0) AS VALOR FROM TB_CONTA");
 
     var valorTotalEntrada = TransacoesEntrada[0]["TOTAL"].toString();
     var valorTotalSaida = TransacoesSaida[0]["TOTAL"].toString();
@@ -37,9 +37,9 @@ class BalancoRepository{
   Future<Decimal> _calcularValorTotalFechamento() async{
     _database = await _repositoryBase.database;
 
-    var TransacoesEntrada = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 1 AND (T.FINALIZADO = 1 OR T.DATA < DATE())");
-    var TransacoesSaida = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO  AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 0 AND (T.FINALIZADO = 1 OR T.DATA < DATE())");
-    var TotalConta = await _database.rawQuery("SELECT IFNULL(VALOR, 0) AS VALOR FROM TB_CONTA WHERE CONTA_PADRAO = 1 LIMIT 1");
+    var TransacoesEntrada = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 1 AND (T.FINALIZADO = 1 OR T.DATA < strftime('%Y-%m-15','now'))");
+    var TransacoesSaida = await _database.rawQuery("SELECT IFNULL(SUM(T.VALOR), 0) AS TOTAL FROM TB_TRANSACAO  AS T INNER JOIN TB_CATEGORIA AS C ON T.ID_CATEGORIA = C.ID WHERE C.ENTRADA = 0 AND (T.FINALIZADO = 1 OR T.DATA < strftime('%Y-%m-15','now'))");
+    var TotalConta = await _database.rawQuery("SELECT IFNULL(SUM(VALOR), 0) AS VALOR FROM TB_CONTA");
 
     var  valorTotalEntrada = TransacoesEntrada[0]["TOTAL"].toString();
     var valorTotalSaida = TransacoesSaida[0]["TOTAL"].toString();

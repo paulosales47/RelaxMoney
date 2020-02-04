@@ -21,6 +21,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   var _balanco = BalancoModel.fromString("0", "0");
 
   @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     _carregarInformacoesTela();
@@ -47,7 +53,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          Balanco(_transacoes, _balanco),
+          Balanco(_transacoes, _balanco, _carregarInformacoesTela),
           Configuracoes(),
         ],
       ),

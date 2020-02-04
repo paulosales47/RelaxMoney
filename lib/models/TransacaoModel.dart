@@ -32,7 +32,7 @@ class TransacaoModel{
     );
 
     this.conta = ContaModel(
-      mapTransacao["VALOR_CONTA"],
+      Decimal.parse(mapTransacao["VALOR_CONTA"].toString()),
       mapTransacao["DESCRICAO_CONTA"],
       mapTransacao["CONTA_PADRAO"] == 1 ? true : false,
       mapTransacao["ID_CONTA"]

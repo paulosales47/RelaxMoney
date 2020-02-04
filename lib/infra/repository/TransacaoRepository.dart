@@ -18,6 +18,27 @@ class TransacaoRepository{
      _database.insert("TB_TRANSACAO", transacao.toMap());
   }
 
+  removerTransacao(TransacaoModel transacao) async{
+     _database = await _repositoryBase.database;
+
+     await _database.delete(
+         "TB_TRANSACAO",
+         where: "ID = ?",
+         whereArgs: [transacao.id]
+     );
+  }
+
+  atualizarTransacao(TransacaoModel transacao) async{
+     _database = await _repositoryBase.database;
+
+      await _database.update(
+       "TB_TRANSACAO",
+       transacao.toMap(),
+       where: "ID = ?",
+       whereArgs: [transacao.id]
+     );
+  }
+
   Future<List<TransacaoModel>> _carregarTransacoes() async{
     _database = await _repositoryBase.database;
     List<TransacaoModel> transacoes = [];
