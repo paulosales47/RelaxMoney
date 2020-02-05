@@ -49,10 +49,8 @@ class RepositoryBase{
 
                         await database.insert("TB_CONFIGURACAO", {"DIA_FECHAMENTO": 15});
 
-                        await database.insert("TB_CONTA", {"DESCRICAO": "NuConta", "CONTA_PADRAO": true, "VALOR": 25321.12});
-                        await database.insert("TB_CONTA", {"DESCRICAO": "EasyInvest", "CONTA_PADRAO": false, "VALOR": 369123.15});
-
-                        await database.insert("TB_TRANSACAO", {"DESCRICAO": "Fatura cartão janeiro 2020", "VALOR": 2686.45, "DATA": DateTime.now().toString(), "FINALIZADO": false, "ID_CATEGORIA": 3, "ID_CONTA": 1});
+                        await database.insert("TB_CONTA", {"DESCRICAO": "NuConta", "CONTA_PADRAO": true, "VALOR": 0});
+                        await database.insert("TB_CONTA", {"DESCRICAO": "EasyInvest", "CONTA_PADRAO": false, "VALOR": 0});
                   });
                 });
           });

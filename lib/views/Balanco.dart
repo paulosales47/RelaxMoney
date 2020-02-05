@@ -26,7 +26,7 @@ class _BalancoState extends State<Balanco> {
       context: context,
       builder: (context){
         return AlertConta((){
-          setState(() {});
+          widget.refresh();
         });
       }
 
