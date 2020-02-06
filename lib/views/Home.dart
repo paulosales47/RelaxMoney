@@ -74,7 +74,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           ),
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue,
       ),
     );
   }

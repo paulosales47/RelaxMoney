@@ -1,4 +1,6 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:relax_money/models/BalancoModel.dart';
 import 'package:relax_money/models/TransacaoModel.dart';
 import 'package:relax_money/service/TransacaoService.dart';
@@ -36,9 +38,14 @@ class _BalancoState extends State<Balanco> {
   }
 
   _verificarTipoTransacao(TransacaoModel transacao){
-    if(transacao.categoria.entrada)
-      return Colors.green;
-    return Colors.red;
+    if(transacao.categoria.entrada && transacao.finalizado)
+      return Colors.green[400];
+    else if(transacao.categoria.entrada && !transacao.finalizado)
+      return Colors.green[200];
+    else if(!transacao.categoria.entrada && transacao.finalizado)
+      return Colors.red[400];
+
+    return Colors.red[200];
   }
 
   _exibirAlertTransacao(TransacaoModel transacao) async{
@@ -54,6 +61,12 @@ class _BalancoState extends State<Balanco> {
     );
   }
 
+  String _formatarValor(Decimal valor){
+
+    final formatador = new NumberFormat.currency(locale: "pt_BR", symbol: "R\$");
+    return formatador.format(valor.toDouble());
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -64,10 +77,10 @@ class _BalancoState extends State<Balanco> {
           Card(
             child: ListTile(
               title: Center(
-                  child: Text(widget.balanco.totalAtual.toString())
+                  child: Text(_formatarValor(widget.balanco.totalAtual))
               ),
               subtitle:Center(
-                  child: Text(widget.balanco.totalFechamento.toString())
+                  child: Text(_formatarValor(widget.balanco.totalFechamento))
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -108,9 +121,10 @@ class _BalancoState extends State<Balanco> {
                   },
                   key: UniqueKey(),
                   child: Card(
+                    color: _verificarTipoTransacao(widget.transacoes[index]),
                     child: ListTile(
                       title: Text(widget.transacoes[index].descricao),
-                      subtitle: Text("R\$: ${widget.transacoes[index].valor.toString()}"),
+                      subtitle: Text(_formatarValor(widget.transacoes[index].valor)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
