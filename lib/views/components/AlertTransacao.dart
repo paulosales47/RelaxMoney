@@ -7,14 +7,14 @@ import 'package:relax_money/models/ContaModel.dart';
 import 'package:relax_money/models/TransacaoModel.dart';
 import 'package:relax_money/service/CategoriaService.dart';
 import 'package:relax_money/service/ContaService.dart';
-import 'package:relax_money/service/TransacaoService.dart';
 
 class AlertTransacao extends StatefulWidget {
 
   String titulo;
+  TransacaoModel transacao;
   Function(TransacaoModel) callback;
 
-  AlertTransacao(this.titulo, this.callback){
+  AlertTransacao(this.titulo, this.callback, [this.transacao]){
   }
 
   @override
@@ -30,22 +30,17 @@ class _AlertTransacaoState extends State<AlertTransacao> {
   bool _statusTransacao = false;
   var _categoriaService = CategoriaService();
   var _contaService = ContaService();
-  var _transacaoService = TransacaoService();
   List<CategoriaModel> _categorias = [];
   List<ContaModel> _contas = [];
   ContaModel _contaSelecionada;
   CategoriaModel _categoriaSelecionada;
 
-
-
-  _carregarContas() async{
+  Future _carregarContas() async{
     _contas = await _contaService.listarContas();
   }
 
-  _carregarCategorias() async{
-    _categorias = await _categoriaService.listarCategorias().whenComplete((){
-      setState(() {});
-    });
+  Future _carregarCategorias() async{
+    _categorias = await _categoriaService.listarCategorias();
   }
 
   Future _selecionarData(BuildContext context) async {
@@ -73,11 +68,29 @@ class _AlertTransacaoState extends State<AlertTransacao> {
     return dataFormatada;
   }
 
+  void _carregarValorCampos() async{
+    await _carregarContas().whenComplete(() async{
+      await _carregarCategorias().whenComplete((){
+        setState(() {
+          if(widget.transacao != null){
+            _descricaoController.text = widget.transacao.descricao;
+            _valorController.text = widget.transacao.valor.toString();
+            _dataTransacao = widget.transacao.data;
+            _textodataTransacao.text = _formatarData(widget.transacao.data);
+            _statusTransacao = widget.transacao.finalizado;
+            _categoriaSelecionada = _categorias.where((categoria) => categoria.id == widget.transacao.categoria.id ).first;
+            _contaSelecionada = _contas.where((conta) => conta.id == widget.transacao.conta.id).first;
+          }
+        });
+
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _carregarCategorias();
-    _carregarContas();
+    _carregarValorCampos();
   }
 
   @override
@@ -183,7 +196,7 @@ class _AlertTransacaoState extends State<AlertTransacao> {
         ),
         FlatButton(
           child: Text(widget.titulo),
-          onPressed: () {
+          onPressed: ()  async {
 
             var transacao = TransacaoModel(
               _valorController.text,
@@ -192,10 +205,12 @@ class _AlertTransacaoState extends State<AlertTransacao> {
               _statusTransacao,
               _contaSelecionada,
               _descricaoController.text,
+              widget.transacao?.id
             );
 
-            widget.callback(transacao);
-            Navigator.pop(context);
+            await widget.callback(transacao).whenComplete((){
+              Navigator.pop(context);
+            });
           },
         )
       ],

@@ -3,6 +3,7 @@ import 'package:relax_money/models/BalancoModel.dart';
 import 'package:relax_money/models/TransacaoModel.dart';
 import 'package:relax_money/service/TransacaoService.dart';
 import 'package:relax_money/views/components/AlertConta.dart';
+import 'package:relax_money/views/components/AlertTransacao.dart';
 import 'package:relax_money/views/components/FormatacaoTexto.dart';
 
 class Balanco extends StatefulWidget {
@@ -21,6 +22,7 @@ class _BalancoState extends State<Balanco> {
 
   var _formatcao = FormatacaoTexto();
   var _transacaoService = TransacaoService();
+
   _exibirAltertConta(){
     showDialog(
       context: context,
@@ -37,6 +39,19 @@ class _BalancoState extends State<Balanco> {
     if(transacao.categoria.entrada)
       return Colors.green;
     return Colors.red;
+  }
+
+  _exibirAlertTransacao(TransacaoModel transacao) async{
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertTransacao("Atualizar Transação", (transacao) async {
+            await _transacaoService.atualizarTransacao(transacao).whenComplete((){
+              widget.refresh();
+            });
+          }, transacao);
+        }
+    );
   }
 
   @override
@@ -61,7 +76,6 @@ class _BalancoState extends State<Balanco> {
                     icon: Icon(Icons.edit),
                     onPressed: (){
                       _exibirAltertConta();
-
                     },
                   )
                 ],
@@ -73,7 +87,7 @@ class _BalancoState extends State<Balanco> {
               itemCount: widget.transacoes.length,
               itemBuilder: (context, index){
                 return Dismissible(
-                  direction: DismissDirection.horizontal,
+                  direction: DismissDirection.startToEnd,
                   background: Container(
                     color: Colors.red,
                     child: Row(
@@ -87,44 +101,38 @@ class _BalancoState extends State<Balanco> {
                       ],
                     ),
                   ),
-                  secondaryBackground: Container(
-                    color: Colors.blue,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(right: 16),
-                          child: Row(
-                            children: <Widget>[
-                              Icon(Icons.check_box, color: Colors.white,),
-                              Icon(Icons.check_box_outline_blank, color: Colors.white,),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
                   onDismissed: (DismissDirection direcao) async {
-                    if(direcao == DismissDirection.startToEnd){
-                      await _transacaoService.removerTransacao(widget.transacoes[index]).whenComplete(() async {
-                        await widget.refresh();
-                      });
-                    }
+                    await _transacaoService.removerTransacao(widget.transacoes[index]).whenComplete(() async {
+                      await widget.refresh();
+                    });
                   },
                   key: UniqueKey(),
-                  child: CheckboxListTile(
-                    activeColor: _verificarTipoTransacao(widget.transacoes[index]),
-                    title: Text(widget.transacoes[index].descricao),
-                    subtitle: Text("R\$: ${widget.transacoes[index].valor.toString()}"),
-                    value: widget.transacoes[index].finalizado,
-                    onChanged: (valor) async {
-                        widget.transacoes[index].finalizado = valor;
-                        await _transacaoService.atualizarTransacao(widget.transacoes[index]).whenComplete(() async{
-                          await widget.refresh();
-                        });
-                    }));
-
-                }),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(widget.transacoes[index].descricao),
+                      subtitle: Text("R\$: ${widget.transacoes[index].valor.toString()}"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Checkbox(
+                              value: widget.transacoes[index].finalizado,
+                              onChanged: (valor) async {
+                                widget.transacoes[index].finalizado = valor;
+                                await _transacaoService.atualizarTransacao(widget.transacoes[index]).whenComplete(() async{
+                                  await widget.refresh();
+                                });
+                              }),
+                          IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () async {
+                                await _exibirAlertTransacao(widget.transacoes[index]);
+                              })
+                        ],
+                      ),
+                    ),
+                  )
+                );
+              }),
           )
         ],
       ),

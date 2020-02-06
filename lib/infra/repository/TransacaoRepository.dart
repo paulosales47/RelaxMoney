@@ -30,7 +30,6 @@ class TransacaoRepository{
 
   atualizarTransacao(TransacaoModel transacao) async{
      _database = await _repositoryBase.database;
-
       await _database.update(
        "TB_TRANSACAO",
        transacao.toMap(),

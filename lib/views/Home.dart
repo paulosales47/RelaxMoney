@@ -60,20 +60,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          exibirAlert("Nova transação", [
-            FlatButton(
-              child: Text("Cancelar"),
-              onPressed: (){
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text("Salvar"),
-              onPressed: (){
-                Navigator.pop(context);
-              },
-            )
-          ]);
+          exibirAlert("Nova transação");
 
         },
         child: Icon(Icons.add),
@@ -92,7 +79,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  exibirAlert(String titulo, List<Widget> botoes){
+  exibirAlert(String titulo){
     showDialog(
         context: context,
         builder: (context){
@@ -104,7 +91,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             });
           });
         }
-
     );
   }
 
