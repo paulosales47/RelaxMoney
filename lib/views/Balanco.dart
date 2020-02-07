@@ -1,6 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:relax_money/models/BalancoModel.dart';
 import 'package:relax_money/models/TransacaoModel.dart';
 import 'package:relax_money/service/TransacaoService.dart';
@@ -67,6 +68,25 @@ class _BalancoState extends State<Balanco> {
     return formatador.format(valor.toDouble());
   }
 
+  String _formatarData(DateTime data){
+    initializeDateFormatting('pt_BR');
+    var formatador = DateFormat("dd-MM");
+    String dataFormatada = formatador.format(data);
+    return dataFormatada;
+  }
+
+  _formatarTextoBalanco(TransacaoModel transacao){
+    return Row(
+      children: <Widget>[
+        Text(_formatarData(transacao.data), style: TextStyle(
+          fontWeight: FontWeight.bold
+        ),),
+        Text(" - "),
+        Text(transacao.descricao)
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -77,10 +97,26 @@ class _BalancoState extends State<Balanco> {
           Card(
             child: ListTile(
               title: Center(
-                  child: Text(_formatarValor(widget.balanco.totalAtual))
+                  child: Row(
+                    children: <Widget>[
+                      Text("Total Atual: ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),),
+                      Text(_formatarValor(widget.balanco.totalAtual))
+                    ],
+                  )
               ),
               subtitle:Center(
-                  child: Text(_formatarValor(widget.balanco.totalFechamento))
+                  child: Row(
+                    children: <Widget>[
+                      Text("Total Fechamento: ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),),
+                      Text(_formatarValor(widget.balanco.totalFechamento))
+                    ],
+                  )
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -123,7 +159,7 @@ class _BalancoState extends State<Balanco> {
                   child: Card(
                     color: _verificarTipoTransacao(widget.transacoes[index]),
                     child: ListTile(
-                      title: Text(widget.transacoes[index].descricao),
+                      title: _formatarTextoBalanco(widget.transacoes[index]),
                       subtitle: Text(_formatarValor(widget.transacoes[index].valor)),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,

@@ -5,7 +5,10 @@ import 'package:relax_money/service/BalancoService.dart';
 import 'package:relax_money/service/TransacaoService.dart';
 import 'package:relax_money/views/Balanco.dart';
 import 'package:relax_money/views/Configuracoes.dart';
+import 'package:relax_money/views/components/AlertNovaCategoria.dart';
+import 'package:relax_money/views/components/AlertNovaConta.dart';
 import 'package:relax_money/views/components/AlertTransacao.dart';
+import 'package:unicorndial/unicorndial.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -57,13 +60,39 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           Configuracoes(),
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          exibirAlert("Nova transação");
-
-        },
-        child: Icon(Icons.add),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: UnicornDialer(
+        orientation: UnicornOrientation.VERTICAL,
+        parentButton: Icon(Icons.add),
+        childButtons: [
+          UnicornButton(
+            currentButton: FloatingActionButton(
+              mini: true,
+              child: Icon(Icons.compare_arrows),
+              onPressed: () {
+                _exibirAlertTransacao("Nova transação");
+              },
+            ),
+          ),
+          UnicornButton(
+            currentButton: FloatingActionButton(
+              mini: true,
+              child: Icon(Icons.account_balance_wallet),
+              onPressed: (){
+                _exibirAlertNovaConta();
+              },
+            ),
+          ),
+          UnicornButton(
+            currentButton: FloatingActionButton(
+              mini: true,
+              child: Icon(Icons.assignment),
+              onPressed: () {
+                _exibirAlertNovaCategoria();
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -78,7 +107,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  exibirAlert(String titulo){
+  _exibirAlertTransacao(String titulo){
     showDialog(
         context: context,
         builder: (context){
@@ -89,6 +118,24 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               });
             });
           });
+        }
+    );
+  }
+
+  _exibirAlertNovaCategoria(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertNovaCategoria();
+        }
+    );
+  }
+
+  _exibirAlertNovaConta(){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertNovaConta();
         }
     );
   }
